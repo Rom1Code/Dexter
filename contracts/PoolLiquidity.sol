@@ -42,7 +42,7 @@ contract PoolLiquidity {
     }
 
     function stakeTokens(string memory nameToken, uint _amount, uint _depositTime) public {
-        if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked("DAPP")))
+        if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked("DApp Token")))
         {
           // Require amount greater than 0
           require(_amount > 0, "amount cannot be 0");

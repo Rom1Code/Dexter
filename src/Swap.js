@@ -212,9 +212,9 @@ updateValue = (action) => {
                 this.action(this.state.tokenName, etherAmount)
               }}>
               <div className="text-white">
-                <label className="float-left font-weight-bold">From</label>
+                <span className="float-left font-weight-bold"><b>From</b></span>
                 <span className="float-right">
-                  <label className="font-weight-bold">Balance : </label> <label className="m-1">{this.state.inputBalance} </label>
+                  <label className="font-weight-bold"> Balance : {this.state.inputBalance} </label>
                   <input
                     onClick={(event) => {
                          this.output.value = this.input.value.toString() * this.state.tokenRate
@@ -224,7 +224,7 @@ updateValue = (action) => {
                         })
                     }
                   }
-                   className="btn btn-danger shadow-lg" type="button" id="max" value="max" style={{marginRight: 5}} />
+                   className="btn btn-danger shadow-lg "type="button" id="max" value="max" />
                   <input
                     onClick={(event) => {
                        this.setState({
@@ -276,11 +276,9 @@ updateValue = (action) => {
                      src={inversion2} />
               </center>
 
-              <div className="text-white">
-                <label className="float-left font-weight-bold">To</label>
-                <span className="float-right">
-                  <label > <b>Balance :</b> </label> <label className="m-1" >{this.state.outputBalance}</label>
-                </span>
+              <div className="text-white m-1">
+                <span className="float-left"><b>To </b></span>
+                  <span className="float-right"> <b> Balance :</b> {this.state.outputBalance}</span>
               </div>
               <div className="input-group mb-2">
                 <input
@@ -302,8 +300,8 @@ updateValue = (action) => {
                 <span className="float-left"><label>Exchange Rate</label></span>
                 <span className="float-right"><label>1 ETH = {this.state.tokenRate} {this.state.tokenName}</label></span>
               </div>
-              <div className="bg-white text-center rounded">
-                <button type="submit" className="btn btn-block text-danger font-weight-bold">SWAP!</button>
+              <div className=" text-center rounded">
+                <button type="submit" className="btn btn-block text-danger bg-white font-weight-bold w-100">SWAP!</button>
               </div>
             </form>
           </div>

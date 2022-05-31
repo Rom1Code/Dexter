@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import tokenLogo from '../token-logo.png'
-import broTokenLogo from '../brocoin-logo.jpg'
+import tokenLogo from './token-logo.png'
+import broTokenLogo from './brocoin-logo.jpg'
 
 class Pool extends Component {
   constructor(props) {
@@ -17,13 +17,18 @@ class Pool extends Component {
 
   render() {
     return (
-      <div id="content" >
-        <div className="bg-danger rounded mb-2 text-white shadow">
-            <center>Dex Balance :</center>
-            <center>{window.web3.utils.fromWei(this.props.dexTokenBalance, 'Ether')} DEX</center>
+      <div>
+        <div className="row border-top border-danger">
+          <div className="col bg-dark text-danger text-center h1">
+            <p>POOL</p>
+          </div>
         </div>
-        <div className="font-weight-bold text-white my-5 h4">
-          POOL
+
+        <div className="row my-2 text-white shadow justify-content-center">
+          <div className="col col-4 bg-danger rounded">
+            <center>Dex Balance :</center>
+            <center>{this.props.dexTokenBalance} DEX</center>
+          </div>
         </div>
 
         <div className="card mb-3 shadow" >
@@ -32,9 +37,8 @@ class Pool extends Component {
                 event.preventDefault()
                 let amount
                 amount = this.input.value.toString()
-                amount = window.web3.utils.toWei(amount, 'Ether')
                 console.log("stake", amount)
-                this.props.stakeTokens('DAPP', amount, Math.round(new Date()/1000))
+                this.props.stakeTokens(this.props.tokenName, amount, Math.round(new Date()/1000))
               }}>
               <div>
                 <label className="float-left">
@@ -42,7 +46,7 @@ class Pool extends Component {
                 </label>
                 <br/>
                 <span className="float-right text-muted">
-                  Balance: {window.web3.utils.fromWei(this.props.tokenBalance, 'Ether')}
+                  Balance:{this.props.tokenBalance}
                 </span>
               </div>
               <div className="input-group mb-4">
@@ -72,22 +76,21 @@ class Pool extends Component {
                       event.preventDefault()
                       let tokenAmount
                       tokenAmount = this.state.input
-                      tokenAmount = window.web3.utils.toWei(tokenAmount, 'Ether')
-                      this.props.getReward('DAPP',  Math.round(new Date()/1000))
-                      this.props.unstakeTokens('DAPP', tokenAmount)
+                      this.props.getReward(this.props.tokenName,  Math.round(new Date()/1000))
+                      this.props.unstakeTokens(this.props.tokenName, tokenAmount)
                     }}>
                       UN-STAKE
                     </button>
                 </div>
               </div>
               <div className="d-flex justify-content-between">
-                <span>Total staked : {window.web3.utils.fromWei(this.props.tokenStakingBalance, 'Ether')} DAPP</span>
+                <span>Total staked : {this.props.tokenStakingBalance} DAPP</span>
                 <button
                       type="submit"
                       className="btn-danger ml-1 rounded"
                       onClick={(event) => {
                         event.preventDefault()
-                        this.props.getReward('DAPP',  Math.round(new Date()/1000))
+                        this.props.getReward(this.props.tokenName,  Math.round(new Date()/1000))
                       }}>
                         Claim Reward : {this.props.tokenWaitingReward}
                       </button>
@@ -102,14 +105,13 @@ class Pool extends Component {
                 event.preventDefault()
                 let amount2
                 amount2 = this.input2.value.toString()
-                amount2 = window.web3.utils.toWei(amount2, 'Ether')
-                this.props.stakeTokens('BRO', amount2, Math.round(new Date()/1000))
+                this.props.stakeTokens(this.props.broTokenName, amount2, Math.round(new Date()/1000))
               }}>
               <div>
                 <label className="float-left"><p>Stake <b>100 BRO</b> token and get <b>1 DEX</b> token</p></label>
                 <br/>
                 <span className="float-right text-muted">
-                  Balance: {window.web3.utils.fromWei(this.props.broTokenBalance, 'Ether')}
+                  Balance: {this.props.broTokenBalance}
                 </span>
               </div>
               <div className="input-group mb-4">
@@ -138,24 +140,22 @@ class Pool extends Component {
 
                       let broTokenAmount
                       broTokenAmount = this.state.input2
-                      console.log( window.web3.utils.toWei(broTokenAmount, 'Ether'))
-
-                      broTokenAmount = window.web3.utils.toWei(broTokenAmount, 'Ether')
-                      this.props.getReward('BRO', Math.round(new Date()/1000))
-                      this.props.unstakeTokens('BRO', broTokenAmount)
+                      console.log(broTokenAmount)
+                      this.props.getReward(this.props.broTokenName, Math.round(new Date()/1000))
+                      this.props.unstakeTokens(this.props.broTokenName, broTokenAmount)
                     }}>
                       UN-STAKE
                     </button>
                 </div>
               </div>
               <div className="d-flex justify-content-between">
-                <span>Total staked : {window.web3.utils.fromWei(this.props.broTokenStakingBalance, 'Ether')} BRO</span>
+                <span>Total staked : {this.props.broTokenStakingBalance} BRO</span>
                 <button
                       type="submit"
                       className="btn-danger ml-1 rounded"
                       onClick={(event) => {
                         event.preventDefault()
-                        this.props.getReward('BRO', Math.round(new Date()/1000))
+                        this.props.getReward(this.props.broTokenName, Math.round(new Date()/1000))
                       }}>
                         Claim Reward : {this.props.broTokenWaitingReward}
                       </button>

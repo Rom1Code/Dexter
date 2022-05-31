@@ -16,6 +16,7 @@ import GouvernanceAddress from './contractsData/gouvernance-address.json'
 import { NoWalletDetected } from "./NoWalletDetected"
 import { ConnectWallet } from "./ConnectWallet"
 import Swap from './Swap'
+import Pool from './Pool'
 import Dashboard from './Dashboard'
 import Background from "./background-dexter2.jpg";
 const HARDHAT_NETWORK_ID = '31337';
@@ -35,6 +36,8 @@ class App extends Component {
       tokenDepositTime: undefined,
 
       rewardTime: 0,
+      tokenNextReward: undefined,
+      broTokenNextReward: undefined,
 
       broTokenContract: undefined,
       broTokenName: undefined,
@@ -85,6 +88,7 @@ async loadBlockchainData(provider, account) {
   const signer = provider.getSigner()
   this.loadTokenContract(signer)
   this.loadBroTokenContract(signer)
+  this.loadDexTokenContract(signer)
   this.loadEthSwapContract(signer)
   this.loadPoolLiquidityContract(signer, account)
   this.loadGouvernanceContract(signer, account)
@@ -114,6 +118,13 @@ loadBroTokenContract = async (signer) => {
                  broTokenName:  name,
                  broTokenSymbol: symbol})
 }
+
+loadDexTokenContract = async (signer) => {
+  let contract = new ethers.Contract(DexTokenAddress.address, DexTokenAbi.abi, signer)
+  let balance = await contract.balanceOf(await signer.getAddress())
+  this.setState({dexTokenBalance: balance.toString()})
+}
+
 
 loadEthSwapContract = async (signer) => {
   let contract = new ethers.Contract(EthSwapAddress.address, EthSwapAbi.abi, signer)
@@ -145,11 +156,16 @@ loadPoolLiquidityContract = async (signer, account) => {
   let broTokenStakingBalance = await contract.broTokenStakingBalance(account)
   let tokenDepositTime = await contract.tokenDepositTime(account)
   let broTokenDepositTime = await contract.broTokenDepositTime(account)
+  let rewardTime = await contract.rewardTime()
+
   this.setState({poolLiquidityContract: contract,
                  tokenStakingBalance : tokenStakingBalance.toNumber(),
                  broTokenStakingBalance : broTokenStakingBalance.toNumber(),
                  tokenDepositTime : tokenDepositTime,
-                 broTokenDepositTime : broTokenDepositTime
+                 broTokenDepositTime : broTokenDepositTime,
+                 rewardTime: rewardTime,
+                 tokenNextReward: (parseFloat(tokenDepositTime)) + parseFloat(rewardTime),
+                 broTokenNextReward: (parseFloat(broTokenDepositTime)) + parseFloat(rewardTime)
               })
 }
 
@@ -189,11 +205,13 @@ _connectWallet = async () => {
 }
 
 buyTokens = async (tokenName, etherAmount) => {
+  console.log(tokenName, etherAmount)
   let value = ethers.utils.parseEther(etherAmount)
   this.setState({ loading: true })
   await this.state.ethSwapContract.connect(this.state.signer).buyTokens(tokenName, { value: value.toString()})
   this.setState({ loading: false })
     //console.log(this.state.transactionCount.toNumber())
+  
 }
 
 sellTokens = async (tokenAmount, tokenName) => {
@@ -217,8 +235,70 @@ sellTokens = async (tokenAmount, tokenName) => {
             }, 1000)
           }
   }
+   window.location.reload();
 }
 
+stakeTokens = async (tokenName, amount, timestamp) => {
+  console.log("stake token", tokenName, amount, timestamp)
+  if(tokenName ==="DApp Token") {
+    this.setState({ loading: true })
+    let tx = await this.state.tokenContract.connect(this.state.signer).approve(this.state.poolLiquidityContract.address, amount)
+    await tx.wait()
+    await this.state.poolLiquidityContract.connect(this.state.signer).stakeTokens(tokenName, amount, timestamp)
+    this.setState({ loading: false })
+    }
+  else{
+    this.setState({ loading: true })
+    let tx = await this.state.broTokenContract.approve(this.state.poolLiquidityContract.address, amount)
+    await tx.wait()
+    await this.state.poolLiquidityContract.stakeTokens(tokenName, amount, timestamp)
+    this.setState({ loading: false })
+  }
+}
+
+unstakeTokens = async (tokenName, amount) => {
+  console.log("unstake", tokenName, amount)
+  this.setState({ loading: true })
+  this.state.poolLiquidityContract.connect(this.state.signer).unstakeTokens(tokenName, amount)
+    this.setState({ loading: false })
+}
+
+ getReward = (tokenName, timestamp) => {
+   console.log("get reward", tokenName, timestamp)
+    this.state.poolLiquidityContract.connect(this.state.signer).issueTokens(tokenName, timestamp)
+}
+
+getWaitingReward = (tokenName) => {
+  let balance = 0
+  let total = 0
+  let time = 0
+  if(tokenName==="DApp Token"){
+    balance = this.state.tokenStakingBalance
+    time = parseFloat(this.state.tokenDepositTime) + parseFloat(this.state.rewardTime)
+    if(balance > 0) {
+      while(Math.round(time) < Math.round(new Date()/1000)) {
+        total = parseFloat(total) + parseFloat(balance.toString())
+        time = parseFloat(Math.round(time)) + parseFloat(this.state.rewardTime.toNumber());
+      }
+      this.setState({ tokenWaitingReward: total.toString()})
+      return this.state.tokenWaitingReward
+    }
+    else {return 0}
+  }
+  else{
+    balance = this.state.broTokenStakingBalance / 100
+    time = parseFloat(this.state.broTokenDepositTime) + parseFloat(this.state.rewardTime)
+    if(balance > 0) {
+      while(Math.round(time) < Math.round(new Date()/1000)) {
+        total = (parseFloat(total) + parseFloat(balance.toString()))
+        time = parseFloat(Math.round(time)) + parseFloat(this.state.rewardTime.toNumber())
+      }
+      this.setState({ broTokenWaitingReward: total.toString()})
+      return this.state.broTokenWaitingReward
+    }
+    else {return 0}
+  }
+}
 
   render() {
     let wallet
@@ -263,6 +343,24 @@ sellTokens = async (tokenAmount, tokenName) => {
         listeTransactionsAccount={this.state.listeTransactionsAccount}
       />
     }
+    else if(this.state.currentForm==='pool'){
+      content = <Pool
+        dexTokenBalance={this.state.dexTokenBalance}
+        tokenBalance={this.state.tokenBalance}
+        tokenName={this.state.tokenName}
+        broTokenBalance={this.state.broTokenBalance}
+        broTokenName={this.state.broTokenName}
+        tokenStakingBalance={this.state.tokenStakingBalance}
+        broTokenStakingBalance={this.state.broTokenStakingBalance}
+        stakeTokens={this.stakeTokens}
+        unstakeTokens={this.unstakeTokens}
+        getReward={this.getReward}
+        getWaitingReward={this.getWaitingReward}
+        tokenWaitingReward={this.state.tokenWaitingReward}
+        broTokenWaitingReward={this.state.broTokenWaitingReward}
+      />
+    }
+
 
 
   return (
