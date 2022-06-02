@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.7.3;
-
+import "hardhat/console.sol";
 import "./DexToken.sol";
 import "./BroToken.sol";
 import "./Token.sol";
@@ -42,7 +42,7 @@ contract PoolLiquidity {
     }
 
     function stakeTokens(string memory nameToken, uint _amount, uint _depositTime) public {
-        if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked("DApp Token")))
+        if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked(token.name())))
         {
           // Require amount greater than 0
           require(_amount > 0, "amount cannot be 0");
@@ -86,8 +86,12 @@ contract PoolLiquidity {
 
     // Unstaking Tokens (Withdraw)
     function unstakeTokens(string memory nameToken, uint _amount) public {
-      if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked("DAPP")))
+      console.log(token.name());
+      console.log(nameToken);
+      console.log(_amount);
+      if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked(token.name())))
       {
+        console.log("if");
         // Fetch staking balance
         uint balance = tokenStakingBalance[msg.sender];
 
@@ -131,10 +135,7 @@ contract PoolLiquidity {
 
     // Issuing Tokens
     function issueTokens(string memory nameToken, uint _claimTime) public {
-        // Only owner can call this function
-        require(msg.sender == owner, "caller must be the owner");
-
-        if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked("DAPP")))
+        if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked(token.name())))
         {
         // Issue tokens
             uint balance = tokenStakingBalance[msg.sender];

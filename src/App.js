@@ -12,11 +12,9 @@ import PoolLiquidityAbi from './contractsData/poolLiquidity.json'
 import PoolLiquidityAddress from './contractsData/poolLiquidity-address.json'
 import GouvernanceAbi from './contractsData/gouvernance.json'
 import GouvernanceAddress from './contractsData/gouvernance-address.json'
-
-import { NoWalletDetected } from "./NoWalletDetected"
-import { ConnectWallet } from "./ConnectWallet"
 import Swap from './Swap'
 import Pool from './Pool'
+import Proposal from './Proposal'
 import Dashboard from './Dashboard'
 import Background from "./background-dexter2.jpg";
 const HARDHAT_NETWORK_ID = '31337';
@@ -27,12 +25,14 @@ class App extends Component {
     super(props)
     this.state = {
       signer: undefined,
+
       tokenContract: undefined,
       tokenName: undefined,
       tokenSymbol: undefined,
       tokenBalance: 0,
       tokenRate: undefined,
       tokenStakingBalance: 0,
+      tokenWaitingReward:0,
       tokenDepositTime: undefined,
 
       rewardTime: 0,
@@ -45,20 +45,24 @@ class App extends Component {
       broTokenBalance: 0,
       broTokenRate: undefined,
       broTokenStakingBalance: 0,
+      broTokenWaitingReward:0,
       broTokenDepositTime: undefined,
 
       poolLiquidityContract: undefined,
       gouvernanceContract: undefined,
-
       ethSwapContract : undefined,
       selectedAddress: undefined,
       ethBalance: 0,
 
       currentForm: 'dashboard',
 
+      dexTokenBalance: 0,
       listeProposals: [],
+      voteForProposal: undefined,
+      createProposal: undefined,
       listeVotes: [],
       hasVotedForProposal: [],
+      updateProposalState: undefined,
 
       listeTransactionsAccount : [],
       listeTransactionsTotal: [],
@@ -176,7 +180,7 @@ loadGouvernanceContract = async (signer, account) => {
 
   for(var i = 1; i <= nbProposal; i++) {
     let proposal = await contract.proposals(i)
-    let hasVotedForProposal = await contract.hasVotedForProposal(i, account).call()
+    let hasVotedForProposal = await contract.hasVotedForProposal(i, account)
     this.setState({ listeProposals : [...this.state.listeProposals, proposal],
                     hasVotedForProposal: [...this.state.hasVotedForProposal, hasVotedForProposal]
       })
@@ -211,7 +215,7 @@ buyTokens = async (tokenName, etherAmount) => {
   await this.state.ethSwapContract.connect(this.state.signer).buyTokens(tokenName, { value: value.toString()})
   this.setState({ loading: false })
     //console.log(this.state.transactionCount.toNumber())
-  
+
 }
 
 sellTokens = async (tokenAmount, tokenName) => {
@@ -300,6 +304,25 @@ getWaitingReward = (tokenName) => {
   }
 }
 
+voteForProposal = (id, yes, no) => {
+  console.log("vote", id, yes, no)
+  this.setState({ loading: true })
+  this.state.gouvernanceContract.connect(this.state.signer).voteForProposal(id,yes,no)
+  this.setState({ loading: false })
+}
+
+createProposal =(description, finishAt) => {
+  console.log("createProposal", description, finishAt)
+  this.setState({ loading: true })
+  this.state.gouvernanceContract.connect(this.state.signer).createProposal(description,finishAt)
+  this.setState({ loading: false })
+}
+
+
+
+
+
+
   render() {
     let wallet
     if(!this.state.selectedAddress){
@@ -327,6 +350,7 @@ getWaitingReward = (tokenName) => {
         broTokenBalance = {this.state.broTokenBalance}
         broTokenStakingBalance = {this.state.broTokenStakingBalance}
         listeTransactionsAccount={this.state.listeTransactionsAccount}
+        dexTokenBalance={this.state.dexTokenBalance}
       />
     }
     else if(this.state.currentForm==='swap'){
@@ -359,7 +383,18 @@ getWaitingReward = (tokenName) => {
         tokenWaitingReward={this.state.tokenWaitingReward}
         broTokenWaitingReward={this.state.broTokenWaitingReward}
       />
-    }
+    }    else {
+              content = <Proposal
+                dexTokenBalance = {this.state.dexTokenBalance}
+                listeProposals = {this.state.listeProposals}
+                hasVotedForProposal = {this.state.hasVotedForProposal}
+                voteForProposal = {this.voteForProposal}
+                createProposal = {this.createProposal}
+                listeVotes = {this.state.listeVotes}
+                updateProposalState = {this.updateProposalState}
+                />
+        }
+
 
 
 

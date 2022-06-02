@@ -54,7 +54,7 @@ contract EthSwap {
     uint ethLog =0;
     uint tokenAmountLog=0;
     uint tokenAmount=0;
-    if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked("DApp Token"))){
+    if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked(token.name()))){
       // Calculate the number of tokens to buy
       tokenAmount = (msg.value / 1000000000000000000) * tokenRate ;
       ethLog = msg.value / 1000000000000000000 ;
@@ -92,7 +92,7 @@ contract EthSwap {
     console.log(token.balanceOf(msg.sender));
     console.log(_amount);
     //console.log(msg.value);
-    if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked("DApp Token"))){
+    if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked(token.name()))){
       // User can't sell more tokens than they have
       require(token.balanceOf(msg.sender) >= _amount);
       etherAmount = (_amount / tokenRate) * 1000000000000000000;

@@ -11,8 +11,8 @@ class Pool extends Component {
     }
   }
   componentWillMount() {
-    this.props.getWaitingReward('DAPP')
-    this.props.getWaitingReward('BRO')
+    this.props.getWaitingReward(this.props.tokenName)
+    this.props.getWaitingReward(this.props.broTokenName)
   }
 
   render() {

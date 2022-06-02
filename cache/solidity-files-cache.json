@@ -37,8 +37,8 @@
       ]
     },
     "C:\\Users\\romai\\Desktop\\PROGRAMMATION\\solidity\\dexter\\contracts\\PoolLiquidity.sol": {
-      "lastModificationDate": 1654026151356,
-      "contentHash": "27557303eac2d2f63c3f484bf4a0889d",
+      "lastModificationDate": 1654155375396,
+      "contentHash": "7a7fd022dacc16f724aff7cdacd505d0",
       "sourceName": "contracts/PoolLiquidity.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -64,6 +64,7 @@
         }
       },
       "imports": [
+        "hardhat/console.sol",
         "./DexToken.sol",
         "./BroToken.sol",
         "./Token.sol"
@@ -146,8 +147,8 @@
       ]
     },
     "C:\\Users\\romai\\Desktop\\PROGRAMMATION\\solidity\\dexter\\contracts\\EthSwap.sol": {
-      "lastModificationDate": 1653854655686,
-      "contentHash": "e05fc76be2d5eed3af1b258b716022c5",
+      "lastModificationDate": 1654154700203,
+      "contentHash": "f1a2082700ce9c67102933c2a42b7436",
       "sourceName": "contracts/EthSwap.sol",
       "solcConfig": {
         "version": "0.7.3",

@@ -212,7 +212,7 @@ updateValue = (action) => {
                 this.action(this.state.tokenName, etherAmount)
               }}>
               <div className="text-white">
-                <span className="float-left font-weight-bold"><b>From</b></span>
+                <span className="float-left"><b>From</b></span>
                 <span className="float-right">
                   <label className="font-weight-bold"> Balance : {this.state.inputBalance} </label>
                   <input
