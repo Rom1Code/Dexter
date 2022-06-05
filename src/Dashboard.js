@@ -59,7 +59,6 @@ progressBar(yes,total){
 }
 
   render() {
-console.log(this.props.hasVotedForProposal)
   return (
     <div>
       <div className="row border-top border-danger">
@@ -93,18 +92,16 @@ console.log(this.props.hasVotedForProposal)
                 voted = "(Voted)"
               }
               if(proposal.finishAt.toString() >  Math.round(new Date()/1000)) {
-                console.log(proposal.description.toString())
                 return <div key={key} className="col col-6 card m-3 p-1 rounded bg-dark text-danger w-25">
-                      <p  className="float-left font-weight-bold h5"> Proposal # {proposal.id.toString()} <label className="text-white">{voted}</label></p>
+                      <p  className="float-left font-weight-bold h5"> Proposal # {proposal.id.toString()} <label className="text-white">{voted}</label></p> 
                       <p className="my-2 font-weight-bold h5"> {proposal.description.toString()}</p>
-                      <p className="progress">
+                      <div className="progress">
                         {this.progressBar(proposal.yes.toString(),proposal.total.toString())}
-                      </p>
+                      </div>
                    </div>
                   }
                 })}
             </div>
-
 
       <div className="row card-body text-white justify-content-center">
         <div className="col col-8 card rounded bg-danger m-1">
@@ -137,8 +134,7 @@ console.log(this.props.hasVotedForProposal)
           </table></center>
 
         </div>
-    </div>
-
+      </div>
     </div>
   );
   }
