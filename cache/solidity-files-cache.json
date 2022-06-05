@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "C:\\Users\\romai\\Desktop\\PROGRAMMATION\\solidity\\dexter\\contracts\\BroToken.sol": {
-      "lastModificationDate": 1653331277316,
-      "contentHash": "c64c3f0658b03782adce48c3ca5735bc",
+      "lastModificationDate": 1654332514632,
+      "contentHash": "f8d46a1d78ea3ac104de8f61b6a4a4a9",
       "sourceName": "contracts/BroToken.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -28,7 +28,9 @@
           }
         }
       },
-      "imports": [],
+      "imports": [
+        "./TokensInfos.sol"
+      ],
       "versionPragmas": [
         "^0.7.3"
       ],
@@ -112,8 +114,8 @@
       ]
     },
     "C:\\Users\\romai\\Desktop\\PROGRAMMATION\\solidity\\dexter\\contracts\\Token.sol": {
-      "lastModificationDate": 1653331235376,
-      "contentHash": "ed3926aafc4d6614365d78b1164abb3b",
+      "lastModificationDate": 1654332853696,
+      "contentHash": "7d3c608c4ff6dcc1fa6802842c6420d9",
       "sourceName": "contracts/Token.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -138,7 +140,9 @@
           }
         }
       },
-      "imports": [],
+      "imports": [
+        "./TokensInfos.sol"
+      ],
       "versionPragmas": [
         "^0.7.3"
       ],
@@ -147,8 +151,8 @@
       ]
     },
     "C:\\Users\\romai\\Desktop\\PROGRAMMATION\\solidity\\dexter\\contracts\\EthSwap.sol": {
-      "lastModificationDate": 1654154700203,
-      "contentHash": "f1a2082700ce9c67102933c2a42b7436",
+      "lastModificationDate": 1654333134850,
+      "contentHash": "d0adfdda9b637ed26374cdaf376050c0",
       "sourceName": "contracts/EthSwap.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -221,8 +225,8 @@
       ]
     },
     "C:\\Users\\romai\\Desktop\\PROGRAMMATION\\solidity\\dexter\\contracts\\Gouvernance.sol": {
-      "lastModificationDate": 1653331259056,
-      "contentHash": "f77a12fe067710c62c6ec9b1ebfbb304",
+      "lastModificationDate": 1654330413095,
+      "contentHash": "b7cf9481a44bf67fbfe70e5fb385c5cc",
       "sourceName": "contracts/Gouvernance.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -290,6 +294,43 @@
       ],
       "artifacts": [
         "Migrations"
+      ]
+    },
+    "C:\\Users\\romai\\Desktop\\PROGRAMMATION\\solidity\\dexter\\contracts\\TokensInfos.sol": {
+      "lastModificationDate": 1654332715500,
+      "contentHash": "c90585f1f13875f3686e19f6c77907ca",
+      "sourceName": "contracts/TokensInfos.sol",
+      "solcConfig": {
+        "version": "0.7.3",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "hardhat/console.sol"
+      ],
+      "versionPragmas": [
+        "^0.7.3"
+      ],
+      "artifacts": [
+        "TokensInfos"
       ]
     }
   }

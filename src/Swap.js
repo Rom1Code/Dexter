@@ -202,7 +202,7 @@ updateValue = (action) => {
             <p>SWAP</p>
           </div>
         </div>
-        <div className="row justify-content-center mb-4 rounded" >
+        <div className="row justify-content-center rounded" >
           <div className="col col-4 bg-danger rounded mt-5">
             <form className="mb-3 text-white" onSubmit={(event) => {
                 event.preventDefault()
@@ -211,10 +211,9 @@ updateValue = (action) => {
                 //this.props.buyTokens(this.state.tokenName,etherAmount)
                 this.action(this.state.tokenName, etherAmount)
               }}>
-              <div className="text-white">
-                <span className="float-left"><b>From</b></span>
-                <span className="float-right">
-                  <label className="font-weight-bold"> Balance : {this.state.inputBalance} </label>
+              <div className="row text-white">
+                <div className="col text-align-start"><b>From</b></div>
+                  <div className="col text-align-end"><b> Balance : </b>{this.state.inputBalance}
                   <input
                     onClick={(event) => {
                          this.output.value = this.input.value.toString() * this.state.tokenRate
@@ -224,7 +223,7 @@ updateValue = (action) => {
                         })
                     }
                   }
-                   className="btn btn-danger shadow-lg "type="button" id="max" value="max" />
+                   className="btn btn-danger border m-1 shadow-lg" type="button" id="max" value="max" />
                   <input
                     onClick={(event) => {
                        this.setState({
@@ -233,9 +232,8 @@ updateValue = (action) => {
                                     })
                        }
                     }
-                  className="btn btn-danger shadow-lg" type="button" id="half" value="half" />
-                </span>
-
+                  className="btn btn-danger shadow-lg  border" type="button" id="half" value="half" />
+                </div>
               </div>
               <div className="input-group mb-4">
                 <input
@@ -276,9 +274,9 @@ updateValue = (action) => {
                      src={inversion2} />
               </center>
 
-              <div className="text-white m-1">
-                <span className="float-left"><b>To </b></span>
-                  <span className="float-right"> <b> Balance :</b> {this.state.outputBalance}</span>
+              <div className="row text-white">
+                <div className="col "><b>To </b></div>
+                  <div className="col text-end"> <b> Balance :</b> {this.state.outputBalance}</div>
               </div>
               <div className="input-group mb-2">
                 <input

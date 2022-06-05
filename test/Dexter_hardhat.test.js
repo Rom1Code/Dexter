@@ -4,7 +4,7 @@ const { expect } = require("chai");
 
 describe("DexterHardhat", function() {
 
-  let token, broToken, ethSwap
+  let token, broToken, ethSwap, tokensInfos
   let deployer, investor
   let provider, balance
 
@@ -17,14 +17,20 @@ describe("DexterHardhat", function() {
 
     provider = waffle.provider
 
+    const TokensInfosFactory = await ethers.getContractFactory("TokensInfos")
+    tokensInfos = await TokensInfosFactory.deploy();
+    console.log("tokensInfos", tokensInfos.address)
+
     const TokentFactory = await ethers.getContractFactory("Token")
-    token = await TokentFactory.deploy();
+    token = await TokentFactory.deploy(tokensInfos.address);
 
     const BroTokentFactory = await ethers.getContractFactory("BroToken")
-    broToken = await BroTokentFactory.deploy();
+    broToken = await BroTokentFactory.deploy(tokensInfos.address);
 
     const EthSwapFactory = await ethers.getContractFactory("EthSwap")
     ethSwap = await EthSwapFactory.deploy(token.address, broToken.address)
+
+
     console.log("ethswap adress" , ethSwap.address)
     console.log("ethswap eth balance (wei)", await provider.getBalance(ethSwap.address))
     console.log("investor eth balance (wei) ", await provider.getBalance(investor.address))
@@ -50,6 +56,18 @@ describe("DexterHardhat", function() {
     })
   })
 
+  describe('TokensInfos deployment', async () => {
+    it('contract has a name', async () => {
+      const name = await tokensInfos.Contractname()
+      expect(name).to.equal('Tokens Infos')
+    })
+    it('contract has token in list', async () => {
+      const list = await tokensInfos.tokensCount()
+      expect(list).to.equal(2)
+    })
+
+  })
+
   describe('EthSwap deployment', async () => {
     it('contract has a name', async () => {
       const name = await ethSwap.name()
@@ -70,7 +88,7 @@ describe("DexterHardhat", function() {
       //console.log('sender token(DAPP) balance before', await token.balanceOf(ethSwap.address))
       //console.log('receiver token(DAPP) balance before', await token.balanceOf(investor.address))
       // Purchase tokens before each example
-      await ethSwap.connect(investor).buyTokens("DAPP",{ value: ethers.utils.parseEther('1')})
+      await ethSwap.connect(investor).buyTokens("DApp Token",{ value: ethers.utils.parseEther('1')})
       await ethSwap.connect(investor).buyTokens("broToken",{ value: ethers.utils.parseEther('1')})
       console.log("ethswap eth balance after purchase (wei)" , await provider.getBalance(ethSwap.address))
       console.log("investor eth balance after purchase (wei)", await provider.getBalance(investor.address))
@@ -105,7 +123,7 @@ describe("DexterHardhat", function() {
    before(async () => {
      // Sell tokens before each example
      await token.connect(investor).approve(ethSwap.address , '100')
-     await ethSwap.connect(investor).sellTokens('100', 'DAPP')
+     await ethSwap.connect(investor).sellTokens('100', 'DApp Token')
 
      await broToken.connect(investor).approve(ethSwap.address , '10000')
      await ethSwap.connect(investor).sellTokens('10000', 'broToken')

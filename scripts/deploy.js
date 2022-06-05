@@ -8,12 +8,16 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
+  const TokensInfos = await ethers.getContractFactory("TokensInfos");
+  const tokensInfos = await TokensInfos.deploy();
+  console.log("TokensInfos address:", tokensInfos.address);
+
   const Token = await ethers.getContractFactory("Token");
-  const token = await Token.deploy();
+  const token = await Token.deploy(tokensInfos.address);
   console.log("Token address:", token.address);
 
   const BroToken = await ethers.getContractFactory("BroToken")
-  broToken = await BroToken.deploy();
+  broToken = await BroToken.deploy(tokensInfos.address);
   console.log("BroToken address:", broToken.address);
 
   const DexToken = await ethers.getContractFactory("DexToken")
@@ -45,15 +49,27 @@ async function main() {
      fs.mkdirSync(contractsDir,{recursive:true});
    }
 
+   //TokensInfos
+   fs.writeFileSync(
+     contractsDir + `\\tokensInfos-address.json`,
+     JSON.stringify({ address: tokensInfos.address }, undefined, 2)
+   );
+   const contractArtifact = artifacts.readArtifactSync("TokensInfos");
+   fs.writeFileSync(
+     contractsDir + `\\tokensInfos.json`,
+     JSON.stringify(contractArtifact, null, 2)
+   );
+   console.log("TokensInfos deployed to:", tokensInfos.address);
+
    //Token
    fs.writeFileSync(
      contractsDir + `\\token-address.json`,
      JSON.stringify({ address: token.address }, undefined, 2)
    );
-   const contractArtifact = artifacts.readArtifactSync("Token");
+   const contractArtifact1 = artifacts.readArtifactSync("Token");
    fs.writeFileSync(
      contractsDir + `\\token.json`,
-     JSON.stringify(contractArtifact, null, 2)
+     JSON.stringify(contractArtifact1, null, 2)
    );
    console.log("Token deployed to:", token.address);
 

@@ -6,13 +6,19 @@ class Pool extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      input: '',
       input2: '',
+      value: undefined
     }
+    this.handleChange = this.handleChange.bind(this);
   }
   componentWillMount() {
-    this.props.getWaitingReward(this.props.tokenName)
-    this.props.getWaitingReward(this.props.broTokenName)
+    this.props.tokensList.map((token, key)=> {
+      this.props.getWaitingReward(token[1])
+    })
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
   }
 
   render() {
@@ -24,145 +30,92 @@ class Pool extends Component {
           </div>
         </div>
 
-        <div className="row my-2 text-white shadow justify-content-center">
+        <div className="row my-2 text-white shadow justify-content-center mb-5">
           <div className="col col-4 bg-danger rounded">
             <center>Dex Balance :</center>
             <center>{this.props.dexTokenBalance} DEX</center>
           </div>
         </div>
 
-        <div className="card mb-3 shadow" >
-          <div className="card-body">
-            <form onSubmit={(event) => {
-                event.preventDefault()
-                let amount
-                amount = this.input.value.toString()
-                console.log("stake", amount)
-                this.props.stakeTokens(this.props.tokenName, amount, Math.round(new Date()/1000))
-              }}>
-              <div>
-                <label className="float-left">
-                  <p>Stake <b>1 DAPP</b> token and get <b>1 DEX</b> token</p>
-                </label>
-                <br/>
-                <span className="float-right text-muted">
-                  Balance:{this.props.tokenBalance}
-                </span>
-              </div>
-              <div className="input-group mb-4">
-                <input
-                  type="text"
-                  //value={this.state.input}
-                  onChange={(event) => {
-                    this.setState({
-                      input: this.input.value.toString()
-                    })
-                  }}
-                  ref={(input) => { this.input = input }}
-                  className="form-control form-control-lg"
-                  placeholder="0"
-                  required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                    <img src={tokenLogo} height='32' alt=""/>
-                    &nbsp;&nbsp;&nbsp; DAPP
-                  </div>
-                  <button type="submit" className="btn-danger ml-1 rounded">STAKE!</button>
-                  <button
-                    type="submit"
-                    className="btn-danger ml-1 rounded"
-                    onClick={(event) => {
-                        console.log( this.state.input)
-                      event.preventDefault()
-                      let tokenAmount
-                      tokenAmount = this.state.input
-                      this.props.getReward(this.props.tokenName,  Math.round(new Date()/1000))
-                      this.props.unstakeTokens(this.props.tokenName, tokenAmount)
-                    }}>
-                      UN-STAKE
-                    </button>
+        {this.props.tokensList.map((token, key)=> {
+          let balance, balanceStaking, waitingReward, logo
+          if(token[1]==="DApp Token"){
+            balance =  this.props.tokenBalance
+            balanceStaking = this.props.tokenStakingBalance
+            waitingReward = this.props.tokenWaitingReward
+            logo = <img src={tokenLogo} height='32' alt=""/>
+          }
+          else{
+            balance =  this.props.broTokenBalance
+            balanceStaking = this.props.broTokenStakingBalance
+            waitingReward = this.props.broTokenWaitingReward
+            logo = <img src={broTokenLogo} height='32' alt=""/>
+          }
+
+          return <center key={key}>
+          <div className="row card mb-3 shadow w-25" >
+            <div className="card-body">
+              <form  onSubmit={(event) => {
+                }}>
+                <div>
+                  <label className=""><p>Stake <b>{token[3].toNumber()} {token[2]}</b> token and get <b>1 DEX</b> token</p></label>
+                  <br/>
+                  <span className="">
+                    Balance : {balance}
+                  </span>
                 </div>
-              </div>
-              <div className="d-flex justify-content-between">
-                <span>Total staked : {this.props.tokenStakingBalance} DAPP</span>
-                <button
+                <div className="input-group mb-4">
+                  <input
+                    type="text"
+                    onChange={(event) => {
+                      this.handleChange(event)
+                    }}
+                    ref={(input2) => { this.input2 = input2 }}
+                    className="form-control form-control-lg"
+                    placeholder="0"
+                    required />
+                  <div className="input-group-append">
+                    <div className="input-group-text">
+                    {logo}
+                      &nbsp;&nbsp;&nbsp; {token[2]}
+                    </div>
+                    <button
+                      type="submit" className=" btn-danger ml-1 rounded"
+                      onClick={(event) => {
+                        event.preventDefault()
+                        this.props.stakeTokens(token[1], this.state.value, Math.round(new Date()/1000))
+                      }}>
+                        STAKE!</button>
+                    <button
                       type="submit"
                       className="btn-danger ml-1 rounded"
                       onClick={(event) => {
                         event.preventDefault()
-                        this.props.getReward(this.props.tokenName,  Math.round(new Date()/1000))
+                        this.props.getReward(token[1], Math.round(new Date()/1000))
+                        this.props.unstakeTokens(token[1], this.state.value)
                       }}>
-                        Claim Reward : {this.props.tokenWaitingReward}
+                        UN-STAKE
                       </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <div className="card mb-3 shadow" >
-          <div className="card-body">
-            <form  onSubmit={(event) => {
-                event.preventDefault()
-                let amount2
-                amount2 = this.input2.value.toString()
-                this.props.stakeTokens(this.props.broTokenName, amount2, Math.round(new Date()/1000))
-              }}>
-              <div>
-                <label className="float-left"><p>Stake <b>100 BRO</b> token and get <b>1 DEX</b> token</p></label>
-                <br/>
-                <span className="float-right text-muted">
-                  Balance: {this.props.broTokenBalance}
-                </span>
-              </div>
-              <div className="input-group mb-4">
-                <input
-                  type="text"
-                  onChange={(event) => {
-                    this.setState({
-                      input2: this.input2.value.toString()
-                    })
-                  }}
-                  ref={(input2) => { this.input2 = input2 }}
-                  className="form-control form-control-lg"
-                  placeholder="0"
-                  required />
-                <div className="input-group-append">
-                  <div className="input-group-text">
-                    <img src={broTokenLogo} height='32' alt=""/>
-                    &nbsp;&nbsp;&nbsp; BRO
                   </div>
-                  <button type="submit" className=" btn-danger ml-1 rounded">STAKE!</button>
-                  <button
-                    type="submit"
-                    className="btn-danger ml-1 rounded"
-                    onClick={(event) => {
-                      event.preventDefault()
-
-                      let broTokenAmount
-                      broTokenAmount = this.state.input2
-                      console.log(broTokenAmount)
-                      this.props.getReward(this.props.broTokenName, Math.round(new Date()/1000))
-                      this.props.unstakeTokens(this.props.broTokenName, broTokenAmount)
-                    }}>
-                      UN-STAKE
-                    </button>
                 </div>
-              </div>
-              <div className="d-flex justify-content-between">
-                <span>Total staked : {this.props.broTokenStakingBalance} BRO</span>
-                <button
-                      type="submit"
-                      className="btn-danger ml-1 rounded"
-                      onClick={(event) => {
-                        event.preventDefault()
-                        this.props.getReward(this.props.broTokenName, Math.round(new Date()/1000))
-                      }}>
-                        Claim Reward : {this.props.broTokenWaitingReward}
-                      </button>
-              </div>
-            </form>
+                <div className="d-flex justify-content-between">
+                  <span>Total staked : {balanceStaking} {token[2]}</span>
+                  <button
+                        type="submit"
+                        className="btn-danger ml-1 rounded"
+                        onClick={(event) => {
+                          event.preventDefault()
+                          this.props.getReward(token[1], Math.round(new Date()/1000))
+                        }}>
+                          Claim Reward : {waitingReward}
+                        </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
+          </center>
+        })
+      }
       </div>
     );
   }

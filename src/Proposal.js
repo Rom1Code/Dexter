@@ -47,8 +47,8 @@ class Proposal extends Component {
   render() {
     let createForm
     if(this.props.dexTokenBalance >= 10000 && this.state.currentPage ==="proposalList"){
-      createForm = <div className="rounded p-1">
-      <p className="font-weight-bold h5 text-white">Create Proposal</p>
+      createForm = <center><div className="rounded my-5 w-75 bg-warning">
+      <p className="font-weight-bold h5 text-dark">Create Proposal</p>
       <form onSubmit={(event) => {
         event.preventDefault()
         this.props.createProposal( this.input.value.toString(), this.input2.value)
@@ -77,8 +77,7 @@ class Proposal extends Component {
           </p>
                </div>
         </form>
-
-      </div>
+      </div></center>
       }
       else {
         createForm = <div className="h5 bg-warning rounded p-1 text-center"><b>!!! Get 10000 DEX to create a proposal !!!</b></div>
@@ -99,7 +98,7 @@ class Proposal extends Component {
         </div>
 
     {createForm}
-    {this.props.listeProposals.map((proposal, key)=> {
+    {this.props.listeProposals.reverse().map((proposal, key)=> {
       let cpt = proposal.id.toString() - 1
       let status, endDate, button
       if((proposal.finishAt.toString() >  Math.round(new Date()/1000)) && this.props.hasVotedForProposal[cpt] === false)
@@ -109,21 +108,21 @@ class Proposal extends Component {
         button = <div className="col text-end"><input onClick={(event) => {this.props.voteForProposal(proposal.id.toString(),0,this.props.dexTokenBalance)}}
                           className="btn btn-danger shadow-lg float-right mx-2" type="button" value="No" />
                        <input onClick={(event) => {this.props.voteForProposal(proposal.id.toString(),this.props.dexTokenBalance,0)}}
-                          className="btn btn-danger shadow-lg float-right" type="button" value="Yes" /></div>
+                          className="btn btn-danger shadow-lg" type="button" value="Yes" /></div>
       }
       else if((proposal.finishAt.toString() >  Math.round(new Date()/1000)) && this.props.hasVotedForProposal[cpt] === true)
       {
         status = "In Progress"
         endDate = this.timeConverter(proposal.finishAt.toString())
         button = <div className="col text-end"><input onClick={(event) => {this.props.voteForProposal(proposal.id.toString(),0,this.props.dexTokenBalance)}}
-                          className="btn btn-danger shadow-lg float-right mx-2" type="button" id="half" value="Already Vote" disabled /></div>
+                          className="btn btn-danger shadow-lg mx-2" type="button" id="half" value="Already Vote" disabled /></div>
       }
       else if(proposal.yes.toString()> proposal.no.toString())
       {
         status = <span className="text-success font-weight-bold">Passed</span>
         endDate = "Finished"
         button = <div className="col text-end"><input onClick={(event) => {this.props.voteForProposal(proposal.id.toString(),0,this.props.dexTokenBalance)}}
-                          className="btn btn-danger shadow-lg float-right " type="button" value="Voting Ended" disabled /></div>
+                          className="btn btn-danger shadow-lg" type="button" value="Voting Ended" disabled /></div>
       }
       else{
         status = "Rejected"
@@ -133,8 +132,8 @@ class Proposal extends Component {
       }
 
       return(
-        <div className="row justify-content-center">
-        <div key={key} className="col col-5 card my-3 p-1">
+        <div  key={key} className="row justify-content-center">
+        <div className="col col-5 card my-3 p-1">
           <span  className="float-left font-weight-bold h4"> Proposal # {proposal.id.toString()}</span>
           <span className="text-danger"> {status}</span>
           <span className="my-2 font-weight-bold h5"> {proposal.description.toString()}</span>

@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.7.3;
+import "./TokensInfos.sol";
 
-contract Token {
+contract Token is TokensInfos{
     string  public name = "DApp Token";
     string  public symbol = "DAPP";
     uint256 public totalSupply = 1000000000000000000000000; // 1 million tokens
     uint8   public decimals = 18;
+    uint    public rate = 100;
 
     event Transfer(
         address indexed _from,
@@ -22,8 +24,9 @@ contract Token {
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
 
-    constructor() {
+    constructor(TokensInfos _tokensInfos) {
         balanceOf[msg.sender] = totalSupply;
+        _tokensInfos.addToken(name, symbol, rate);
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {

@@ -4,6 +4,7 @@ pragma solidity ^0.7.3;
 import "./DexToken.sol";
 
 contract Gouvernance {
+  string public name = "Gouvernance";
   DexToken public dexToken;
   uint public nbProposal = 0;
   uint public nbVote = 0;

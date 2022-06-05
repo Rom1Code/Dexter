@@ -1,5 +1,7 @@
 import { ethers } from "ethers"
 import React, { Component } from 'react'
+import TokensInfosAbi from './contractsData/tokensInfos.json'
+import TokensInfosAddress from './contractsData/tokensInfos-address.json'
 import TokenAbi from './contractsData/token.json'
 import TokenAddress from './contractsData/token-address.json'
 import BroTokenAbi from './contractsData/broToken.json'
@@ -69,6 +71,7 @@ class App extends Component {
       transactionCount : undefined,
 
       loading: true,
+      tokensList: []
 
     }
 }
@@ -90,6 +93,7 @@ async loadWeb3() {
 
 async loadBlockchainData(provider, account) {
   const signer = provider.getSigner()
+  this.loadTokensInfos(signer)
   this.loadTokenContract(signer)
   this.loadBroTokenContract(signer)
   this.loadDexTokenContract(signer)
@@ -98,29 +102,43 @@ async loadBlockchainData(provider, account) {
   this.loadGouvernanceContract(signer, account)
   this.setState({ loading: false,
                   signer: signer})
+}
 
+loadTokensInfos = async (signer) => {
+  let contract = new ethers.Contract(TokensInfosAddress.address, TokensInfosAbi.abi, signer)
+  let tokensCount = await contract.tokensCount()
+  for(var i=1; i <= tokensCount.toNumber();i++){
+    let token = await contract.tokensList(i)
+    this.setState({tokensList: [...this.state.tokensList, token]})
+  }
 }
 
 loadTokenContract = async (signer) => {
   let contract = new ethers.Contract(TokenAddress.address, TokenAbi.abi, signer)
   let name = await contract.name();
   let symbol = await contract.symbol();
+  let rate = await contract.rate();
   let balance = await contract.balanceOf(await signer.getAddress())
   this.setState({tokenContract: contract,
                  tokenBalance: balance.toString(),
                  tokenName:  name,
-                 tokenSymbol: symbol})
+                 tokenSymbol: symbol,
+                 tokenRate: rate.toNumber(),
+                })
 }
 
 loadBroTokenContract = async (signer) => {
   let contract = new ethers.Contract(BroTokenAddress.address, BroTokenAbi.abi, signer)
   let name = await contract.name();
   let symbol = await contract.symbol();
+  let rate = await contract.rate();
   let balance = await contract.balanceOf(await signer.getAddress())
   this.setState({broTokenContract: contract,
                  broTokenBalance: balance.toString(),
                  broTokenName:  name,
-                 broTokenSymbol: symbol})
+                 broTokenSymbol: symbol,
+                 broTokenRate: rate.toNumber(),
+                 })
 }
 
 loadDexTokenContract = async (signer) => {
@@ -132,13 +150,10 @@ loadDexTokenContract = async (signer) => {
 
 loadEthSwapContract = async (signer) => {
   let contract = new ethers.Contract(EthSwapAddress.address, EthSwapAbi.abi, signer)
-  let tokenRate = await contract.tokenRate();
-  let broTokenRate = await contract.broTokenRate();
   let transactionCount = await contract.transactionCount()
   this.setState({ethSwapContract: contract,
-                tokenRate: tokenRate.toString(),
-                broTokenRate: broTokenRate.toNumber(),
-                transactionCount: transactionCount.toNumber()})
+                transactionCount: transactionCount.toNumber(),
+                })
   for(var i=1; i <= transactionCount.toNumber();i++){
       let transactionToAccount = await contract.transactionToAccount(i)
       let transaction = await contract.transactions(i)
@@ -347,15 +362,21 @@ createProposal =(description, finishAt) => {
         ethBalance = {this.state.ethBalance}
         tokenBalance = {this.state.tokenBalance}
         tokenStakingBalance = {this.state.tokenStakingBalance}
+        tokenWaitingReward={this.state.tokenWaitingReward}
         broTokenBalance = {this.state.broTokenBalance}
         broTokenStakingBalance = {this.state.broTokenStakingBalance}
+        broTokenWaitingReward={this.state.broTokenWaitingReward}
         listeTransactionsAccount={this.state.listeTransactionsAccount}
         dexTokenBalance={this.state.dexTokenBalance}
+        getWaitingReward={this.getWaitingReward}
+        tokensList={this.state.tokensList}
+        listeProposals = {this.state.listeProposals}
+        hasVotedForProposal = {this.state.hasVotedForProposal}
       />
     }
     else if(this.state.currentForm==='swap'){
       content = <Swap
-        ethBalance={this.state.ethBalance}
+        ethBalance={this.state.ethBalance.substring(0,6)}
         tokenBalance={this.state.tokenBalance}
         tokenRate={this.state.tokenRate}
         tokenName={this.state.tokenName}
@@ -371,9 +392,7 @@ createProposal =(description, finishAt) => {
       content = <Pool
         dexTokenBalance={this.state.dexTokenBalance}
         tokenBalance={this.state.tokenBalance}
-        tokenName={this.state.tokenName}
         broTokenBalance={this.state.broTokenBalance}
-        broTokenName={this.state.broTokenName}
         tokenStakingBalance={this.state.tokenStakingBalance}
         broTokenStakingBalance={this.state.broTokenStakingBalance}
         stakeTokens={this.stakeTokens}
@@ -382,16 +401,18 @@ createProposal =(description, finishAt) => {
         getWaitingReward={this.getWaitingReward}
         tokenWaitingReward={this.state.tokenWaitingReward}
         broTokenWaitingReward={this.state.broTokenWaitingReward}
+        tokensList={this.state.tokensList}
       />
-    }    else {
-              content = <Proposal
-                dexTokenBalance = {this.state.dexTokenBalance}
-                listeProposals = {this.state.listeProposals}
-                hasVotedForProposal = {this.state.hasVotedForProposal}
-                voteForProposal = {this.voteForProposal}
-                createProposal = {this.createProposal}
-                listeVotes = {this.state.listeVotes}
-                updateProposalState = {this.updateProposalState}
+    }
+    else {
+      content = <Proposal
+        dexTokenBalance = {this.state.dexTokenBalance}
+        listeProposals = {this.state.listeProposals}
+        hasVotedForProposal = {this.state.hasVotedForProposal}
+        voteForProposal = {this.voteForProposal}
+        createProposal = {this.createProposal}
+        listeVotes = {this.state.listeVotes}
+        updateProposalState = {this.updateProposalState}
                 />
         }
 

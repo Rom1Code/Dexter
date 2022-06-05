@@ -8,8 +8,8 @@ contract EthSwap {
   string public name = "EthSwap Instant Exchange";
   Token public token;
   BroToken public broToken;
-  uint public tokenRate = 100;
-  uint public broTokenRate = 10000;
+  //uint public tokenRate = 100;
+  //uint public broTokenRate = 10000;
 
   struct Transaction {
     uint id;
@@ -56,26 +56,26 @@ contract EthSwap {
     uint tokenAmount=0;
     if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked(token.name()))){
       // Calculate the number of tokens to buy
-      tokenAmount = (msg.value / 1000000000000000000) * tokenRate ;
+      tokenAmount = (msg.value / 1000000000000000000) * token.rate() ;
       ethLog = msg.value / 1000000000000000000 ;
-      tokenAmountLog = ((msg.value * tokenRate) / 1000000000000000000);
+      tokenAmountLog = ((msg.value * token.rate()) / 1000000000000000000);
       // Require that EthSwap has enough tokens   - this = adress du contrat
       require(token.balanceOf(address(this)) >= tokenAmount);
       // Transfer tokens to the user
       token.transfer(msg.sender, tokenAmount);
       // Emit an event
-      emit TokensPurchased(msg.sender, address(token), tokenAmount, tokenRate);
+      emit TokensPurchased(msg.sender, address(token), tokenAmount, token.rate());
     }
     else {
-      tokenAmount =(msg.value / 1000000000000000000) * broTokenRate ;
+      tokenAmount =(msg.value / 1000000000000000000) * broToken.rate();
       ethLog = msg.value / 1000000000000000000;
-      tokenAmountLog = ((msg.value * broTokenRate) / 1000000000000000000);
+      tokenAmountLog = ((msg.value * broToken.rate()) / 1000000000000000000);
       // Require that EthSwap has enough tokens   - this = adress du contrat
       require(broToken.balanceOf(address(this)) >= tokenAmount);
       // Transfer tokens to the user
       broToken.transfer(msg.sender, tokenAmount);
       // Emit an event
-      emit TokensPurchased(msg.sender, address(broToken), tokenAmount, broTokenRate);
+      emit TokensPurchased(msg.sender, address(broToken), tokenAmount, broToken.rate());
     }
 
     //Log transaction
@@ -95,7 +95,7 @@ contract EthSwap {
     if(keccak256(abi.encodePacked(nameToken))==keccak256(abi.encodePacked(token.name()))){
       // User can't sell more tokens than they have
       require(token.balanceOf(msg.sender) >= _amount);
-      etherAmount = (_amount / tokenRate) * 1000000000000000000;
+      etherAmount = (_amount / token.rate()) * 1000000000000000000;
       etherAmountLog = etherAmount / 1000000000000000000;
       tokenAmountLog =  _amount;
       // Require that EthSwap has enough Ether
@@ -104,14 +104,14 @@ contract EthSwap {
       token.transferFrom(msg.sender, address(this), _amount);
       msg.sender.transfer(etherAmount); //transfert la quantité à celui qui appele la fonction
       // Emit an event
-      emit TokensSold(msg.sender, address(token), _amount, tokenRate);
+      emit TokensSold(msg.sender, address(token), _amount, token.rate());
     }
     else {
       // User can't sell more tokens than they have
       require(broToken.balanceOf(msg.sender) >= _amount);
 
       // Calculate the amount of Ether to redeem
-      etherAmount = (_amount / broTokenRate) * 1000000000000000000;
+      etherAmount = (_amount / broToken.rate()) * 1000000000000000000;
       etherAmountLog = etherAmount / 1000000000000000000;
       tokenAmountLog =  _amount;
 
@@ -122,7 +122,7 @@ contract EthSwap {
       broToken.transferFrom(msg.sender, address(this), _amount);
       msg.sender.transfer(etherAmount); //transfert la quantité à celui qui appele la fonction
       // Emit an event
-      emit TokensSold(msg.sender, address(broToken), _amount, broTokenRate);
+      emit TokensSold(msg.sender, address(broToken), _amount, broToken.rate());
 
     }
     //Log transaction
